@@ -305,7 +305,6 @@ void wczytajZPlikuTekstowegoAdresat(vector<Adresat> &adresaci) {
     }
 }
 
-
 void wyszukajPoImieniuAdresata(vector<Adresat> adresaci) {
     string szukaneImie;
     cout << "Podaj imie: ";
@@ -353,6 +352,9 @@ void wyszukajAdresataPoNazwisku(vector <Adresat> adresaci) {
     }
     cout << endl;
     cout << "Press any key to continue . . . ";
+    getchar();
+}
+
 
 void usunAdresata(vector<Adresat> &adresaci, int idUzytkownika) {
     char klawiszPotwierdzajacy;
@@ -391,6 +393,93 @@ void usunAdresata(vector<Adresat> &adresaci, int idUzytkownika) {
     } else {
         cout << "Adresat nie zostal usuniety." << endl;
     }
+    cout << endl;
+    cout << "Nacisnij dowolny klawisz, aby kontynuowac...";
+    getchar();
+}
+
+void edytujAdresata(vector<Adresat> &adresaci, int idUzytkownika) {
+    char numer;
+    string imie, nazwisko, numerTelefonu, adres, email;
+    int numerId;
+    bool adresatZnaleziony = false;
+
+    cout << "Podaj id adresata do edycji: ";
+    numerId = wczytajLiczbeCalkowita();
+
+    cout << "1 - imie" <<endl;
+    cout << "2 - nazwisko" <<endl;
+    cout << "3 - numer telefonu" <<endl;
+    cout << "4 - email" << endl;
+    cout << "5 - adres" << endl;
+    cout << "6 - powrot do menu"<<endl;
+    cout << endl;
+    cout << "Twoj wybor: " <<endl;
+
+    numer = wczytajZnak();
+
+    wczytajZPlikuTekstowegoAdresat(adresaci);
+
+    for (size_t i = 0; i < adresaci.size(); i++) {
+        if (adresaci[i].id == numerId && adresaci[i].idUzytkownika == idUzytkownika) {
+            adresatZnaleziony = true;
+            switch (numer) {
+            case '1':
+                cout << "Podaj nowe imie: ";
+                imie = wczytajLinie();
+                adresaci[i].imie = imie;
+                break;
+            case '2':
+                cout << "Podaj nowe nazwisko: ";
+                nazwisko = wczytajLinie();
+                adresaci[i].nazwisko = nazwisko;
+                break;
+            case '3':
+                cout << "Podaj nowy numer telefonu: ";
+                cin.sync();
+                numerTelefonu = wczytajLinie();
+                adresaci[i].numerTelefonu = numerTelefonu;
+                break;
+            case '4':
+                cout << "Podaj nowy email: ";
+                email = wczytajLinie();
+                adresaci[i].email = email;
+                break;
+            case '5':
+                cout << "Podaj nowy adres: ";
+                adres = wczytajLinie();
+                adresaci[i].adres = adres;
+                break;
+            case '6':
+                return;
+            default:
+                cout << "Niepoprawny wybor, sprobuj ponownie.";
+                break;
+        }
+    }
+}
+
+   if (adresatZnaleziony) {
+        fstream plik;
+        plik.open("ksiazka_adresowa_tymczasowa.txt", ios::out);
+
+        if (plik.is_open()) {
+            for (Adresat adresat : adresaci) {
+                plik << adresat.id << '|' << adresat.idUzytkownika << '|'<< adresat.imie << '|'<< adresat.nazwisko << '|' << adresat.numerTelefonu << '|' << adresat.email << '|' << adresat.adres << '|' << endl;
+            }
+            plik.close();
+
+            remove("ksiazka_adresowa.txt");
+            rename("ksiazka_adresowa_tymczasowa.txt", "ksiazka_adresowa.txt");
+
+            cout << "Adresat zaktualizowany." << endl;
+        } else {
+            cout << "Nie udalo sie otworzyc pliku." << endl;
+        }
+    } else {
+        cout << "Adresat o podanym ID nie istnieje lub nie nalezy do zalogowanego uzytkownika." << endl;
+    }
+
     cout << endl;
     cout << "Nacisnij dowolny klawisz, aby kontynuowac...";
     getchar();
