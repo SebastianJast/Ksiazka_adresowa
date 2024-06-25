@@ -305,6 +305,7 @@ void wczytajZPlikuTekstowegoAdresat(vector<Adresat> &adresaci) {
     }
 }
 
+
 void wyszukajPoImieniuAdresata(vector<Adresat> adresaci) {
     string szukaneImie;
     cout << "Podaj imie: ";
@@ -352,6 +353,46 @@ void wyszukajAdresataPoNazwisku(vector <Adresat> adresaci) {
     }
     cout << endl;
     cout << "Press any key to continue . . . ";
+
+void usunAdresata(vector<Adresat> &adresaci, int idUzytkownika) {
+    char klawiszPotwierdzajacy;
+    int idAdresataDoUsuniecia;
+    cout << "Podaj id adresata: ";
+    idAdresataDoUsuniecia = wczytajLiczbeCalkowita();
+    cout << "Jesli napewno chcesz usunac adresata wcisnij klawisz: 't': ";
+    klawiszPotwierdzajacy = wczytajZnak();
+
+    if (klawiszPotwierdzajacy == 't') {
+        wczytajZPlikuTekstowegoAdresat(adresaci);
+        bool adresatZnaleziony = false;
+        for (size_t i = 0; i < adresaci.size(); i++) {
+            if (adresaci[i].id == idAdresataDoUsuniecia && adresaci[i].idUzytkownika == idUzytkownika) {
+                adresaci.erase(adresaci.begin() + i);
+                adresatZnaleziony = true;
+                break;
+            }
+        }
+        if (adresatZnaleziony) {
+            fstream plik;
+            plik.open("ksiazka_adresowa_tymczasowa.txt", ios::out);
+
+            for (Adresat adresat : adresaci) {
+                plik << adresat.id << '|' << adresat.idUzytkownika << '|'<< adresat.imie << '|'<< adresat.nazwisko << '|' << adresat.numerTelefonu << '|' << adresat.email << '|' << adresat.adres << '|' << endl;
+            }
+            plik.close();
+
+            remove("ksiazka_adresowa.txt");
+            rename("ksiazka_adresowa_tymczasowa.txt", "ksiazka_adresowa.txt");
+
+            cout << "Adresat zostal usuniety." << endl;
+        } else {
+            cout << "Adresat o podanym ID nie istnieje lub nie nalezy do zalogowanego uzytkownika." << endl;
+        }
+    } else {
+        cout << "Adresat nie zostal usuniety." << endl;
+    }
+    cout << endl;
+    cout << "Nacisnij dowolny klawisz, aby kontynuowac...";
     getchar();
 }
 
